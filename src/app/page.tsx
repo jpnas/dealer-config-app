@@ -2,17 +2,12 @@
 import Head from "next/head";
 import styles from "./page.module.css";
 import AddIcon from "@mui/icons-material/Add";
+import { useContext } from "react";
+import { DataContext } from "./data-provider";
 
 export default function Page() {
-  const games = [
-    { name: "Poker", link: "/poker" },
-    { name: "Blackjack", link: "/blackjack" },
-    { name: "Sueca", link: "/sueca" },
-    { name: "Truco", link: "/truco" },
-    { name: "Poker Chinês", link: "/poker-chines" },
-    // Adicione mais jogos aqui
-  ];
-
+  const { games } = useContext(DataContext);
+  console.log(games);
   const colors = [
     "#39a3ff",
     "#ff8027",
@@ -25,11 +20,6 @@ export default function Page() {
     "#ff3b30",
     "#2d3f48",
   ];
-  // Função para lidar com a adição de novos jogos
-  const handleAddGame = () => {
-    // Implemente a lógica para adicionar um novo jogo
-    console.log("Adicionar novo jogo");
-  };
 
   return (
     <div className={styles.main}>
@@ -44,7 +34,7 @@ export default function Page() {
               className={styles.card}
               style={{ backgroundColor: colors[index] }}
               key={index}
-              onClick={() => (window.location.href = game.link)}
+              onClick={() => (window.location.href = String(game.id))}
             >
               {game.name}
             </div>

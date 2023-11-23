@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import styles from "./page.module.css";
 import {
   TextField,
@@ -18,24 +19,43 @@ import AddIcon from "@mui/icons-material/Add";
 import GroupsIcon from "@mui/icons-material/Groups";
 import TableBarIcon from "@mui/icons-material/TableBar";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { DataContext } from "../data-provider";
+import axios from "axios";
 
-type instrucionProps = {
+export type InstrucionProps = {
   type: "players" | "table";
   cardAmount: number;
 };
 export default function Page({ params }: { params: { gameId: string } }) {
+  const { games } = useContext(DataContext);
+  let initInstructions: InstrucionProps[];
+  let game;
+
   const [name, setName] = useState("");
   const [minPlayers, setMinPlayers] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("");
-  const [instructions, setInstructions] = useState<instrucionProps[]>([]);
+  const [instructions, setInstructions] = useState<InstrucionProps[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [instructionEdit, setInstructionEdit] = useState<instrucionProps>({
+  const [instructionEdit, setInstructionEdit] = useState<InstrucionProps>({
     type: "players",
     cardAmount: 1,
   });
   const [indexToBeEdited, setIndexToBeEdited] = useState<number>();
   const [indexToBeDeleted, setIndexToBeDeleted] = useState<number>();
+
+  useEffect(() => {
+    if (params.gameId === "new") {
+      initInstructions = [];
+    } else {
+      game = games.filter((game) => game.id === params.gameId)[0];
+      initInstructions = game?.instructions;
+      setName(game?.name);
+      setMinPlayers(String(game?.minPlayers));
+      setMaxPlayers(String(game?.maxPlayers));
+    }
+    setInstructions(initInstructions);
+  }, [games, params.gameId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,6 +115,39 @@ export default function Page({ params }: { params: { gameId: string } }) {
     setIndexToBeEdited(undefined);
   };
 
+  const handleSubmitGame = async () => {
+    if (params.gameId === "new") {
+      try {
+        const response = await axios.post("http://127.0.0.1:5000/games", {
+          name: name,
+          minPlayers: minPlayers,
+          maxPlayers: maxPlayers,
+          instructions: instructions,
+        });
+        toast.success("Jogo criado com sucesso!");
+      } catch (error) {
+        console.error("Failed to create game:", error);
+        toast.error("Erro ao criar o jogo.");
+      }
+    } else {
+      try {
+        const response = await axios.put(
+          `http://127.0.0.1:5000/games/${params.gameId}`,
+          {
+            name: name,
+            minPlayers: minPlayers,
+            maxPlayers: maxPlayers,
+            instructions: instructions,
+          }
+        );
+        toast.success("Jogo editado com sucesso!");
+      } catch (error) {
+        console.error("Failed to edit game:", error);
+        toast.error("Erro ao editar o jogo.");
+      }
+    }
+  };
+
   return (
     <div className={styles.main}>
       <a className={styles.back} href="/">
@@ -152,7 +205,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
             required
           />
         </div>
-        {instructions.map((instruction, index) => (
+        {instructions?.map((instruction, index) => (
           <div
             className={styles.card}
             style={{ backgroundColor: colors[index] }}
@@ -197,6 +250,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
             size="large"
             type="submit"
             className={styles.submit}
+            onClick={handleSubmitGame}
           >
             Salvar
           </Button>
