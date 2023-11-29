@@ -152,6 +152,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
           minPlayers: minPlayers,
           maxPlayers: maxPlayers,
           instructions: instructions,
+          excludedCards: excludedCards,
         });
         toast.success("Jogo criado com sucesso!");
       } catch (error) {
@@ -192,6 +193,9 @@ export default function Page({ params }: { params: { gameId: string } }) {
             label="Nome"
             type="text"
             value={name}
+            inputProps={{
+              maxLength: 20,
+            }}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setName(e.target.value)
             }
@@ -250,7 +254,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
                   <Image src={`/${suit}`} width={20} height={20} alt="" />
                   <span
                     className={`${styles.excluded} ${
-                      excludedCards.includes(indexSuit * 13 + indexValue)
+                      excludedCards?.includes(indexSuit * 13 + indexValue)
                         ? styles.active
                         : ""
                     }`}
