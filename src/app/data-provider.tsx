@@ -9,6 +9,7 @@ export type GameProps = {
   minPlayers: number;
   maxPlayers: number;
   instructions: InstrucionProps[];
+  excludedCards: number[];
 };
 
 type DataContextType = {

@@ -7,7 +7,7 @@ import { DataContext } from "./data-provider";
 
 export default function Page() {
   const { games } = useContext(DataContext);
-  console.log(games);
+
   const colors = [
     "#39a3ff",
     "#ff8027",

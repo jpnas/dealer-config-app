@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styles from "./page.module.css";
+import Image from "next/image";
 import {
   TextField,
   Button,
@@ -13,6 +14,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   InputAdornment,
+  Checkbox,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
@@ -43,6 +45,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
   });
   const [indexToBeEdited, setIndexToBeEdited] = useState<number>();
   const [indexToBeDeleted, setIndexToBeDeleted] = useState<number>();
+  const [excludedCards, setExcludedCards] = useState<number[]>([]);
 
   useEffect(() => {
     if (params.gameId === "new") {
@@ -53,6 +56,7 @@ export default function Page({ params }: { params: { gameId: string } }) {
       setName(game?.name);
       setMinPlayers(String(game?.minPlayers));
       setMaxPlayers(String(game?.maxPlayers));
+      setExcludedCards(game?.excludedCards);
     }
     setInstructions(initInstructions);
   }, [games, params.gameId]);
@@ -73,6 +77,24 @@ export default function Page({ params }: { params: { gameId: string } }) {
     "#40c065",
     "#ff3b30",
     "#2d3f48",
+  ];
+
+  const suits = ["clubs.webp", "hearts.webp", "spades.png", "diamonds.png"];
+
+  const cardValues = [
+    "A",
+    "K",
+    "Q",
+    "J",
+    "T",
+    "9",
+    "8",
+    "7",
+    "6",
+    "5",
+    "4",
+    "3",
+    "2",
   ];
 
   const handleTypeChange = (
@@ -115,6 +137,13 @@ export default function Page({ params }: { params: { gameId: string } }) {
     setIndexToBeEdited(undefined);
   };
 
+  const handleExcludedCard = (cardIndex: number) => {
+    if (excludedCards.includes(cardIndex)) {
+      setExcludedCards(excludedCards.filter((number) => number !== cardIndex));
+    } else {
+      setExcludedCards([...excludedCards, cardIndex]);
+    }
+  };
   const handleSubmitGame = async () => {
     if (params.gameId === "new") {
       try {
@@ -204,6 +233,34 @@ export default function Page({ params }: { params: { gameId: string } }) {
             fullWidth
             required
           />
+        </div>
+        <div className={styles.cardSelection}>
+          {suits.map((suit, indexSuit) => (
+            <div className={styles.cardRow} key={suit}>
+              {cardValues.map((value, indexValue) => (
+                <button
+                  type="button"
+                  key={value}
+                  className={styles.cardButton}
+                  onClick={() =>
+                    handleExcludedCard(indexSuit * 13 + indexValue)
+                  }
+                >
+                  {value}
+                  <Image src={`/${suit}`} width={20} height={20} alt="" />
+                  <span
+                    className={`${styles.excluded} ${
+                      excludedCards.includes(indexSuit * 13 + indexValue)
+                        ? styles.active
+                        : ""
+                    }`}
+                  >
+                    ❌
+                  </span>
+                </button>
+              ))}
+            </div>
+          ))}
         </div>
         {instructions?.map((instruction, index) => (
           <div

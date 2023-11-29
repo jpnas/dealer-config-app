@@ -96,3 +96,43 @@
   align-items: center;
   gap: 20px;
 }
+
+.cardSelection {
+  display: flex;
+  flex-direction: column;
+  margin-top: 36px;
+  gap: 8px;
+}
+
+.cardRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.cardButton {
+  height: 40px;
+  width: 40px;
+  color: black;
+  background-color: white;
+  margin-right: 16px;
+  font-size: 20px;
+  border: 1px solid black;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  place-items: center;
+  justify-content: center;
+  gap: 1px;
+  position: relative;
+}
+
+.excluded {
+  display: none;
+  position: absolute;
+  font-size: 30px;
+}
+
+.active {
+  display: block;
+}
